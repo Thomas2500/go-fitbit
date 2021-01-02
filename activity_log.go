@@ -61,10 +61,10 @@ type ActivitiesLogList struct {
 		ActivityTypeID        int       `json:"activityTypeId"`
 		Calories              int       `json:"calories"`
 		CaloriesLink          string    `json:"caloriesLink"`
-		Distance              int       `json:"distance"`
+		Distance              float64   `json:"distance"`
 		DistanceUnit          string    `json:"distanceUnit"`
 		Duration              int       `json:"duration"`
-		ElevationGain         int       `json:"elevationGain"`
+		ElevationGain         float64   `json:"elevationGain"`
 		HasActiveZoneMinutes  bool      `json:"hasActiveZoneMinutes"`
 		LastModified          time.Time `json:"lastModified"`
 		LogID                 int64     `json:"logId"`
@@ -85,7 +85,7 @@ type ActivitiesLogList struct {
 			Type            string   `json:"type"`
 			URL             string   `json:"url"`
 		} `json:"source"`
-		Speed            int       `json:"speed"`
+		Speed            float64   `json:"speed"`
 		StartTime        time.Time `json:"startTime"`
 		AverageHeartRate int       `json:"averageHeartRate,omitempty"`
 		DetailsLink      string    `json:"detailsLink,omitempty"`
