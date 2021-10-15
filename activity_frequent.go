@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 )
 
+// ActivitiesFrequent contains an activity from frequent call
 type ActivitiesFrequent struct {
 	ActivityID  int     `json:"activityId"`
 	Calories    int     `json:"calories"`

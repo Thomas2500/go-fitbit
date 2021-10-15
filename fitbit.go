@@ -69,12 +69,24 @@ func (m *Session) LoginURL() string {
 	return m.OAuthConfg.AuthCodeURL(m.OAuthConfg.ClientID)
 }
 
-// SetToken sets a oauth2 token
-func (m *Session) SetToken(token *oauth2.Token) {
+// SetToken sets a oauth2 token and tries to renew it if expired
+func (m *Session) SetToken(token *oauth2.Token) (*oauth2.Token, error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
-	m.Token = token
-	m.httpClient = m.OAuthConfg.Client(context.Background(), token)
+	ctx := context.Background()
+	conf := &oauth2.Config{}
+	if token.Expiry.Before(time.Now()) {
+		src := conf.TokenSource(ctx, token)
+		newToken, err := src.Token()
+		if err != nil {
+			return nil, err
+		}
+		if newToken.AccessToken != token.AccessToken {
+			token = newToken
+		}
+	}
+	m.httpClient = m.OAuthConfg.Client(ctx, token)
+	return token, nil
 }
 
 // GetToken returns an oauth2.Token object
