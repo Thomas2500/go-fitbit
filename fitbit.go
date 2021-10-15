@@ -86,6 +86,7 @@ func (m *Session) SetToken(token *oauth2.Token) (*oauth2.Token, error) {
 		}
 	}
 	m.httpClient = m.OAuthConfg.Client(ctx, token)
+	m.Token = token
 	return token, nil
 }
 
