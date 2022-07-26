@@ -237,7 +237,7 @@ func (m *Session) AddWater(date string, amount float64, unit string) (WaterLog, 
 	}
 
 	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/foods/log/water.json", map[string]string{
-		"amount": strconv.FormatFloat(amount, 'f', 1, 10),
+		"amount": strconv.FormatFloat(amount, 'f', 1, 64),
 		"date":   date,
 		"unit":   unit,
 	})
@@ -268,7 +268,7 @@ func (m *Session) UpdateWater(id uint64, amount float64, unit string) (WaterLog,
 	}
 
 	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/foods/log/water/"+strconv.FormatUint(id, 10)+".json", map[string]string{
-		"amount": strconv.FormatFloat(amount, 'f', 1, 10),
+		"amount": strconv.FormatFloat(amount, 'f', 1, 64),
 		"unit":   unit,
 	})
 	if err != nil {
@@ -436,7 +436,7 @@ func (m *Session) AddFood(data NewFoodLog) (AddFoodLogResponse, error) {
 
 	dataToPost["mealTypeId"] = strconv.Itoa(data.MealTypeID)
 	dataToPost["unitId"] = strconv.FormatUint(data.UnitID, 10)
-	dataToPost["amount"] = strconv.FormatFloat(data.Amount, 'f', 2, 10)
+	dataToPost["amount"] = strconv.FormatFloat(data.Amount, 'f', 2, 64)
 	dataToPost["date"] = data.Date
 
 	if data.FoodID != 0 {
@@ -481,7 +481,7 @@ func (m *Session) UpdateFood(id uint64, data NewFoodLog) (AddFoodLogResponse, er
 		dataToPost["unitId"] = strconv.FormatUint(data.UnitID, 10)
 	}
 	if data.Amount != 0 {
-		dataToPost["amount"] = strconv.FormatFloat(data.Amount, 'f', 2, 10)
+		dataToPost["amount"] = strconv.FormatFloat(data.Amount, 'f', 2, 64)
 	}
 	if data.Calories > 0 {
 		dataToPost["calories"] = strconv.FormatUint(data.Calories, 10)

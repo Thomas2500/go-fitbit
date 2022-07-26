@@ -12,31 +12,41 @@ import (
 	"time"
 
 	"github.com/Thomas2500/go-fitbit"
+	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
 
 // Temporary constant
-const clientID = ""
-const clientSecret = ""
-const subscriberCode = ""
+const clientID = "22D5RX"
+const clientSecret = "982ad62d23b286f308c5b5e7e4eebffd"
+const subscriberCode = "e12b47c93c2c7f2eb562fb05005884e57a118d16100fa00969be49382393d61d"
 
-var fca fitbit.Session
+var fca *fitbit.Session
 
 func main() {
-	fca = fitbit.New(clientID, clientSecret, "https://fitbit.bella.pm/callback", []string{
-		fitbit.ScopeActivity,
-		fitbit.ScopeSettings,
-		fitbit.ScopeLocation,
-		fitbit.ScopeSocial,
-		fitbit.ScopeHeartrate,
-		fitbit.ScopeProfile,
-		fitbit.ScopeSleep,
-		fitbit.ScopeNutrition,
-		fitbit.ScopeWeight,
+	fca = fitbit.New(fitbit.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		RedirectURL:  fmt.Sprintf("https://%s/callback", "fitbit.bella.pm"),
+		Scopes: []string{
+			fitbit.ScopeActivity,
+			fitbit.ScopeSettings,
+			fitbit.ScopeLocation,
+			fitbit.ScopeSocial,
+			fitbit.ScopeHeartrate,
+			fitbit.ScopeProfile,
+			fitbit.ScopeSleep,
+			fitbit.ScopeNutrition,
+			fitbit.ScopeWeight,
+		},
 	})
 
+	// Define fitbit hook function to save token changes to file
+	fca.TokenChange = fitbitSaveToken
+
 	// Print OAuth2 access url
-	fmt.Println(fca.LoginURL())
+	csrf := uuid.New().String()
+	fmt.Println(fca.LoginURL(csrf))
 
 	// We already have a token which can be loaded
 	jsonFile, err := ioutil.ReadFile("token.json") // just pass the file name
@@ -44,7 +54,6 @@ func main() {
 		fmt.Print(err)
 		return
 	}
-	_ = jsonFile
 
 	token := oauth2.Token{}
 	err = json.Unmarshal(jsonFile, &token)
@@ -53,8 +62,6 @@ func main() {
 		return
 	}
 	fca.SetToken(&token)
-
-	fmt.Println(fca.GetToken())
 
 	http.HandleFunc("/", handleMain)
 	//http.HandleFunc("/style.css", handleStyleFile)
@@ -105,34 +112,38 @@ func main() {
 	go func() {
 		s := <-sigc
 		_ = s
-		writeToken()
+		err := fca.SaveToken()
+		if err != nil {
+			log.Println("error saving token", err)
+		}
 	}()
 
 	select {}
 }
 
-func writeToken() {
-	file, _ := json.MarshalIndent(fca.GetToken(), "", " ")
-	_ = ioutil.WriteFile("token.json", file, 0644)
-	log.Println("Write current token to token.json")
+func fitbitSaveToken(token *oauth2.Token) {
+	jsonFile, err := os.Create("token.json")
+	if err != nil {
+		log.Println("error creating token file", err)
+	}
+	defer jsonFile.Close()
+	err = json.NewEncoder(jsonFile).Encode(token)
+	if err != nil {
+		log.Println("error encoding token", err)
+	}
+	log.Println("FITBIT: token saved to file")
 }
 
 func init() {
 	go func() {
 		time.Sleep(time.Second * 5)
-		log.Println(fca.AddSubscription("", 1))
-		time.Sleep(time.Second * 10)
 		log.Println(fca.GetSubscriptions(""))
+		time.Sleep(time.Second * 10)
+		log.Println(fca.AddSubscription("", 1))
 		time.Sleep(time.Second * 30)
 		log.Println(fca.GetSubscriptions(""))
-	}()
-
-	// TODO: Periodic write/write on token change to save session state
-	go func() {
-		for {
-			time.Sleep(time.Minute)
-			writeToken()
-		}
+		time.Sleep(time.Second * 45)
+		log.Println(fca.Introspect())
 	}()
 }
 
@@ -144,14 +155,17 @@ func handleFitbitCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get token
-	if _, err := fca.HandleCallback(r.FormValue("code")); err != nil {
-		log.Println("error handling callback", err)
+	// Exchange the code for an access token
+	token, err := fca.Exchange(r.FormValue("code"))
+	if err != nil {
+		log.Println("FITBIT: error persisting initial token", err)
+		return
 	}
 
-	token := fca.GetToken()
+	// Prettify token for logging
 	js, err := json.Marshal(token)
-	fmt.Println(string(js), err)
-
+	log.Printf("FITBIT: token: %s - E: %s", string(js), err.Error())
+	fitbitSaveToken(token)
+	log.Println("FITBIT: token saved")
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }

@@ -42,7 +42,8 @@ func (m *Session) SetActivitiesGoal(period string, goals ActivitiesGoal) (Activi
 		period = "daily"
 	}
 
-	var goalsData map[string]string
+	goalsData := make(map[string]string)
+
 	if goals.Goals.CaloriesOut != 0 {
 		goalsData["caloriesOut"] = strconv.Itoa(goals.Goals.CaloriesOut)
 	}
