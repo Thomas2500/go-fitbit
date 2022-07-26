@@ -19,7 +19,6 @@ func handleFitbitSubscriber(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("subscriber incoming request")
 	log.Println(r.URL.Query())
-	log.Println(r.Header)
 	by, err := ioutil.ReadAll(r.Body)
 	log.Println(err, string(by))
 }
