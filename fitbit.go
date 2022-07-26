@@ -26,24 +26,18 @@ type Scope = string
 
 // Different types of useable scopes
 const (
-	ScopeActivity  Scope = "activity"
-	ScopeSettings  Scope = "settings"
-	ScopeLocation  Scope = "location"
-	ScopeSocial    Scope = "social"
-	ScopeHeartrate Scope = "heartrate"
-	ScopeProfile   Scope = "profile"
-	ScopeSleep     Scope = "sleep"
-	ScopeNutrition Scope = "nutrition"
-	ScopeWeight    Scope = "weight"
-)
-
-// ApplicationType represents the type of registered application.
-type ApplicationType int64
-
-const (
-	PersonalApplication ApplicationType = iota // PersonalApplication represents personal type application
-	ClientApplication                          // ClientApplication represents client type application
-	ServerApplication                          // ServerApplication represents server type application
+	ScopeActivity      Scope = "activity"
+	ScopeBreathingRate Scope = "respiratory_rate"
+	ScopeHeartrate     Scope = "heartrate"
+	ScopeLocation      Scope = "location"
+	ScopeNutrition     Scope = "nutrition"
+	ScopeProfile       Scope = "profile"
+	ScopeSettings      Scope = "settings"
+	ScopeSleep         Scope = "sleep"
+	ScopeSocial        Scope = "social"
+	ScopeSpO2          Scope = "oxygen_saturation"
+	ScopeTemperature   Scope = "temperature"
+	ScopeWeight        Scope = "weight"
 )
 
 // Session is the main object with user data
@@ -70,12 +64,10 @@ type Session struct {
 
 // Config describes the configuration of a fitbit API configuration
 type Config struct {
-	ClientID        string
-	ClientSecret    string
-	RedirectURL     string
-	Scopes          []Scope
-	ApplicationType ApplicationType
-	TokenPath       string
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
+	Scopes       []Scope
 }
 
 // Ratelimit includes the rate limit information provided on every request
@@ -98,6 +90,7 @@ func New(config Config) *Session {
 		},
 	}
 
+	// return session
 	return &Session{
 		config:      config,
 		oAuthConfig: oAuthConfig,
@@ -109,26 +102,34 @@ func (m *Session) LoginURL(csrf string) string {
 	return m.oAuthConfig.AuthCodeURL(csrf, oauth2.AccessTypeOffline)
 }
 
+// cacherTransport is a transport which intercepts RoundTrip to check if the token changed on HTTP requests
 type cacherTransport struct {
 	Base    *oauth2.Transport
 	Session *Session
 }
 
+// RoundTrip overrides the http.Client RoundTrip method to check if the token changed
 func (c *cacherTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+	// get the current used token and determine if it is already expired
 	if _, err := c.Base.Source.Token(); err != nil {
 		return nil, errExpiredToken
 	}
+	// authorize based on oauth2.Transport.RoundTrip
 	resp, err = c.Base.RoundTrip(req)
 	if err != nil {
 		return nil, err
 	}
+	// get the current used token to compare it with the previous one
 	newTok, err := c.Base.Source.Token()
 	if err != nil {
-		// While we’re unable to obtain a new token, the request was still
-		// successful, so let’s gracefully handle this error by not caching a
-		// new token. In either case, the user will need to re-authenticate.
+		// a error appeared which means the token is invalid
+		// return the response, the user has to decide how to proceed here
+		// probably a new authentication is required which is a manual task for the user
 		return resp, nil
 	}
+
+	// check if the token changed from old to new one
+	// if it changed update token copy and trigger TokenChange user function to allow persisting the token
 	if c.Session.token == nil ||
 		c.Session.token.AccessToken != newTok.AccessToken ||
 		c.Session.token.RefreshToken != newTok.RefreshToken {
@@ -137,7 +138,7 @@ func (c *cacherTransport) RoundTrip(req *http.Request) (resp *http.Response, err
 		c.Session.token = newTok
 		c.Session.mutex.Unlock()
 
-		// Call token change hook
+		// Call token change hook if defined by user
 		if c.Session.TokenChange != nil {
 			go c.Session.TokenChange(newTok)
 		}
@@ -174,6 +175,7 @@ func (m *Session) SaveToken() error {
 	return nil
 }
 
+// GetRatelimit returns the current ratelimit information obtained by the last API request
 func (m *Session) GetRatelimit() Ratelimit {
 	return m.ratelimit
 }
@@ -302,14 +304,18 @@ func (m *Session) makeDELETERequest(url string) ([]byte, error) {
 // parseRatelimit parses the rate limit headers of fitbit API
 func (m *Session) parseRatelimit(header *http.Header) {
 	// Get rate limit data of request
+	// fist header returns the remaining API requests until reset time is reached
 	rateLimitData := header.Get("fitbit-rate-limit-remaining")
 	if rateLimitData != "" {
 		m.ratelimit.RateLimitUsed, _ = strconv.Atoi(rateLimitData)
 	}
+	// second header returns the number of API requests allowed in genral
 	rateLimitData = header.Get("fitbit-rate-limit-limit")
 	if rateLimitData != "" {
 		m.ratelimit.RateLimitAvailable, _ = strconv.Atoi(rateLimitData)
 	}
+
+	// rate limit reset returns when the rate limit will be reset
 	rateLimitData = header.Get("fitbit-rate-limit-reset")
 	if rateLimitData != "" {
 		remSec, _ := strconv.Atoi(rateLimitData)

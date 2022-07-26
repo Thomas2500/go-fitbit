@@ -35,8 +35,8 @@ func (m *Session) Introspect() (IntrospectResponse, error) {
 	// As of rfc7662 exp and iat should be seconds since epoch
 	// Fitbit doesn't respect this and uses milliseconds
 	// correct it to the correct unit
-	intro.Exp = intro.Exp / 1000
-	intro.Iat = intro.Iat / 1000
+	intro.Exp /= 1000
+	intro.Iat /= 1000
 
 	return intro, nil
 }

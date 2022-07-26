@@ -355,6 +355,7 @@ func (m *Session) FoodSearch(value string) (FoodSearchResult, error) {
 	return foods, nil
 }
 
+// FoodByID returns a food by its id
 func (m *Session) FoodByID(id uint64) (FoodEntry, error) {
 	contents, err := m.makeRequest("https://api.fitbit.com/1/foods/" + strconv.FormatUint(id, 10) + ".json")
 	if err != nil {
@@ -369,6 +370,7 @@ func (m *Session) FoodByID(id uint64) (FoodEntry, error) {
 	return foods, nil
 }
 
+// FoodEntry contains a food entry
 type FoodEntry struct {
 	Food struct {
 		AccessLevel        string `json:"accessLevel"`
@@ -398,6 +400,7 @@ type FoodEntry struct {
 	} `json:"food"`
 }
 
+// FoodUnits contains a list of supported food units
 func (m *Session) FoodUnits() (FoodUnits, error) {
 	contents, err := m.makeRequest("https://api.fitbit.com/1/foods/units.json")
 	if err != nil {
@@ -412,6 +415,7 @@ func (m *Session) FoodUnits() (FoodUnits, error) {
 	return foods, nil
 }
 
+// FoodUnits defines the response of FoodUnits request
 type FoodUnits []struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
@@ -514,6 +518,7 @@ func (m *Session) RemoveFood(id uint64) error {
 	return nil
 }
 
+// NewFoodLog defines the data to be sent to the API when adding a new food log entry
 type NewFoodLog struct {
 	FoodID     uint64  `json:"foodId,omitempty"`
 	FoodName   string  `json:"foodName,omitempty"`
@@ -527,6 +532,7 @@ type NewFoodLog struct {
 	// TODO: Additional Nutrition Information
 }
 
+// AddFoodLogResponse defines the response of AddFood request
 type AddFoodLogResponse struct {
 	FoodDay struct {
 		Date    string `json:"date"`

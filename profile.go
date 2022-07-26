@@ -2,6 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -73,7 +74,7 @@ func (m *Session) Profile(userID uint64) (Profile, error) {
 	if userID > 0 {
 		requestID = strconv.FormatUint(userID, 10)
 	}
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/" + requestID + "/profile.json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/%s/profile.json", requestID))
 	if err != nil {
 		return Profile{}, err
 	}
@@ -94,7 +95,7 @@ func (m *Session) SetProfile(userID uint64, params map[string]string) (Profile, 
 	if userID > 0 {
 		requestID = strconv.FormatUint(userID, 10)
 	}
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/"+requestID+"/profile.json", params)
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/%s/profile.json", requestID), params)
 	if err != nil {
 		return Profile{}, err
 	}

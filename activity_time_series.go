@@ -25,6 +25,7 @@ type ActivitiesLogSingleRecord struct {
 	Value    string `json:"value"`
 }
 
+// ActivitiesInterdayLog contains user activity logs for the given day in intraday accuracy
 type ActivitiesInterdayLog struct {
 	ActivitiesCalories          []ActivitiesLogSingleRecord    `json:"activities-calories,omitempty"`
 	ActivitiesCaloriesIntraday  ActivitiesIntradaySingleRecord `json:"activities-calories-intraday,omitempty"`
@@ -38,6 +39,7 @@ type ActivitiesInterdayLog struct {
 	ActivitiesElevationIntraday ActivitiesIntradaySingleRecord `json:"activities-elevation-intraday,omitempty"`
 }
 
+// ActivitiesIntradaySingleRecord contains a single record of an intraday activity
 type ActivitiesIntradaySingleRecord struct {
 	Dataset []struct {
 		Time  string  `json:"time"`

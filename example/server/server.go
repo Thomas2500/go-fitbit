@@ -16,14 +16,16 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Temporary constant
+// Temporary constant - replace with your own clientID, secret and subscriber code
 const clientID = "22D5RX"
 const clientSecret = "982ad62d23b286f308c5b5e7e4eebffd"
 const subscriberCode = "e12b47c93c2c7f2eb562fb05005884e57a118d16100fa00969be49382393d61d"
 
+// fitbit Session established for this demo
 var fca *fitbit.Session
 
 func main() {
+	// Create a new fitbit session
 	fca = fitbit.New(fitbit.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -44,7 +46,7 @@ func main() {
 	// Define fitbit hook function to save token changes to file
 	fca.TokenChange = fitbitSaveToken
 
-	// Print OAuth2 access url
+	// Print OAuth2 access url to grant permissions to use API requests on behalf of the user
 	csrf := uuid.New().String()
 	fmt.Println(fca.LoginURL(csrf))
 
@@ -55,6 +57,7 @@ func main() {
 		return
 	}
 
+	// load file contents into token struct to initialize the session using SetTocken
 	token := oauth2.Token{}
 	err = json.Unmarshal(jsonFile, &token)
 	if err != nil {
@@ -63,6 +66,7 @@ func main() {
 	}
 	fca.SetToken(&token)
 
+	// Create a webserver to allow simple naviation and exploration of the fitbit API
 	http.HandleFunc("/", handleMain)
 	//http.HandleFunc("/style.css", handleStyleFile)
 
@@ -103,6 +107,7 @@ func main() {
 		log.Fatal("error starting http server", err)
 	}
 
+	// Listen for stop signals to force a token write in exit
 	sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc,
 		syscall.SIGHUP,
@@ -118,9 +123,11 @@ func main() {
 		}
 	}()
 
+	// endless wait to provide webserver
 	select {}
 }
 
+// fitbitSaveToken as hook funktion automatically called when the Token is changed
 func fitbitSaveToken(token *oauth2.Token) {
 	jsonFile, err := os.Create("token.json")
 	if err != nil {
@@ -134,6 +141,7 @@ func fitbitSaveToken(token *oauth2.Token) {
 	log.Println("FITBIT: token saved to file")
 }
 
+// Execute some functions async to test some API functionality - may fail if not authorized using token
 func init() {
 	go func() {
 		time.Sleep(time.Second * 5)
@@ -147,7 +155,10 @@ func init() {
 	}()
 }
 
+// handleFitbitCallback handles the oAuth2 callback visited by the user after granting permissions
 func handleFitbitCallback(w http.ResponseWriter, r *http.Request) {
+	// check if the request is a callback from fitbit and a code is given
+	// Advice: CSRF (state) token can be checked here if the request is legitimate
 	if r.FormValue("code") == "" {
 		if _, err := w.Write([]byte("No code given!")); err != nil {
 			fmt.Println("can't write to client on fitbit callback", err)
@@ -165,7 +176,11 @@ func handleFitbitCallback(w http.ResponseWriter, r *http.Request) {
 	// Prettify token for logging
 	js, err := json.Marshal(token)
 	log.Printf("FITBIT: token: %s - E: %s", string(js), err.Error())
+
+	// save token to file for recurring use
 	fitbitSaveToken(token)
 	log.Println("FITBIT: token saved")
+
+	// redirect to main page
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }

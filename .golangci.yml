@@ -1,0 +1,38 @@
+---
+linters-settings:
+  misspell:
+    locale: "US"
+  lll:
+    line-length: 170
+
+linters:
+  enable:
+    - bodyclose
+    - containedctx
+    - deadcode
+    - depguard
+    - errcheck
+    - exhaustive
+    - exportloopref
+    - gocritic
+    - goimports
+    - gomodguard
+    - gosec
+    - gosimple
+    - govet
+    - ifshort
+    - ineffassign
+    - lll
+    - makezero
+    - misspell
+    - prealloc
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unparam
+    - unused
+    - varcheck
+    - whitespace

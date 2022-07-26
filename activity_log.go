@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
+// ActivityLog returns the activity log for the given configuration
 func (m *Session) ActivityLog(params LogListParameters) (ActivitiesLogList, error) {
-
 	parameterList := url.Values{}
 	if params.BeforeDate != "" {
 		parameterList.Add("beforeDate", params.BeforeDate)
@@ -43,6 +43,7 @@ func (m *Session) ActivityLog(params LogListParameters) (ActivitiesLogList, erro
 	return activityResponse, nil
 }
 
+// LogListParameters contains parameters for the activity log list
 type LogListParameters struct {
 	BeforeDate string
 	AfterDate  string
@@ -50,6 +51,7 @@ type LogListParameters struct {
 	Offset     int
 }
 
+// ActivitiesLogList contains the activity log list
 type ActivitiesLogList struct {
 	Activities []struct {
 		ActiveDuration int `json:"activeDuration"`
@@ -166,6 +168,7 @@ func (m *Session) LogActivity(activity NewActivity) (NewActivityResponse, error)
 	return activityResponse, nil
 }
 
+// NewActivity contains the data for a new activity
 type NewActivity struct {
 	ActivityID     int     `json:"activityId,omitempty"`
 	ActivityName   string  `json:"activityName,omitempty"`
@@ -177,6 +180,7 @@ type NewActivity struct {
 	DistanceUnit   string  `json:"distanceUnit,omitempty"` // Steps units are available only for "Walking" (activityId=90013) and "Running" (activityId=90009) directory activities and their intensity levels.
 }
 
+// NewActivityResponse contains the response from a new activity request
 type NewActivityResponse struct {
 	ActivityLog struct {
 		ActivityID       int     `json:"activityId"`

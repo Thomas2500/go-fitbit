@@ -71,6 +71,7 @@ type SleepDay struct {
 		MinutesAsleep       int    `json:"minutesAsleep"`
 		MinutesAwake        int    `json:"minutesAwake"`
 		MinutesToFallAsleep int    `json:"minutesToFallAsleep"`
+		LogType             string `json:"logType"`
 		StartTime           string `json:"startTime"`
 		TimeInBed           int    `json:"timeInBed"`
 		Type                string `json:"type"`
@@ -124,6 +125,7 @@ func (m *Session) SleepByDayRange(startDay string, endDay string) (SleepDay, err
 	return sleep, nil
 }
 
+// SleepLogList returns the sleep log list for based on given parameters
 func (m *Session) SleepLogList(params LogListParameters) (SleepLogList, error) {
 	parameterList := url.Values{}
 	if params.BeforeDate != "" {
@@ -158,6 +160,7 @@ func (m *Session) SleepLogList(params LogListParameters) (SleepLogList, error) {
 	return activityResponse, nil
 }
 
+// SleepLogList defines the structure of SleepLogList based on an response
 type SleepLogList struct {
 	Pagination struct {
 		BeforeDate string `json:"beforeDate"`
@@ -218,6 +221,7 @@ type SleepLogList struct {
 		MinutesToFallAsleep int    `json:"minutesToFallAsleep"`
 		RestlessCount       int    `json:"restlessCount,omitempty"`
 		RestlessDuration    int    `json:"restlessDuration,omitempty"`
+		LogType             string `json:"logType"`
 		StartTime           string `json:"startTime"`
 		TimeInBed           int    `json:"timeInBed"`
 		Type                string `json:"type"`
@@ -287,6 +291,7 @@ func (m *Session) SleepGoal() (SleepGoal, error) {
 	return sleepGoalResponse, nil
 }
 
+// SleepGoal defines the structure of SleepGoal response
 type SleepGoal struct {
 	Consistency struct {
 		AwakeRestlessPercentage float64 `json:"awakeRestlessPercentage"`

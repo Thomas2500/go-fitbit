@@ -21,6 +21,7 @@ func (m *Session) FoodFavorites() (FoodCollectionList, error) {
 	return favs, nil
 }
 
+// FoodCollectionList contains a list of food collections
 type FoodCollectionList []struct {
 	AccessLevel        string `json:"accessLevel"`
 	Amount             int    `json:"amount,omitempty"`

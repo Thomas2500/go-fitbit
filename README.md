@@ -38,6 +38,11 @@ Functioons explicitly not tested (eventually broken, please test!) or not finish
   - create custom food - https://dev.fitbit.com/build/reference/web-api/food-logging/#create-food
   - delete custom food - https://dev.fitbit.com/build/reference/web-api/food-logging/#delete-custom-food
 
+Implement newly addad APIs:
+ - Temperature
+ - Breathing Rate
+ - SpO2
+
 Further to do:
 - combine similar structs and highlight differences
 

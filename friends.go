@@ -67,7 +67,7 @@ type FriendsLeaderboard struct {
 	} `json:"included"`
 }
 
-//GetFriendsLeaderboard returns the leaderbord including the user
+// GetFriendsLeaderboard returns the leaderbord including the user
 func (m *Session) GetFriendsLeaderboard() (FriendsLeaderboard, error) {
 	contents, err := m.makeRequest("https://api.fitbit.com/1.1/user/-/leaderboard/friends.json")
 	if err != nil {

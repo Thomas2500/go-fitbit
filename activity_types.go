@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 )
 
+// ActivitiesTypes contains a list of activities
 type ActivitiesTypes struct {
 	Categories []struct {
 		Activities []struct {
