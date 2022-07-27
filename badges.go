@@ -2,6 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -45,7 +46,7 @@ func (m *Session) Badges(userID uint64) (BadgesList, error) {
 	if userID > 0 {
 		requestID = strconv.FormatUint(userID, 10)
 	}
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/" + requestID + "/badges.json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/%s/badges.json", requestID))
 	if err != nil {
 		return BadgesList{}, err
 	}

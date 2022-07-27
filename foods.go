@@ -3,6 +3,7 @@ package fitbit
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/url"
 	"strconv"
 )
@@ -99,7 +100,7 @@ type FoodLog struct {
 // FoodLogByDay returns the food log by a given date
 // date must be in the format yyyy-MM-dd
 func (m *Session) FoodLogByDay(day string) (FoodLog, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/foods/log/date/" + day + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/date/%s.json", day))
 	if err != nil {
 		return FoodLog{}, err
 	}
@@ -127,7 +128,7 @@ type FoodWaterLogDateRange struct {
 // FoodLogByDateRange returns the calories log of a given time range by date
 // date must be in the format yyyy-MM-dd
 func (m *Session) FoodLogByDateRange(startDay string, endDay string) (FoodWaterLogDateRange, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/foods/log/caloriesIn/date/" + startDay + "/" + endDay + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/caloriesIn/date/%s/%s.json", startDay, endDay))
 	if err != nil {
 		return FoodWaterLogDateRange{}, err
 	}
@@ -143,7 +144,7 @@ func (m *Session) FoodLogByDateRange(startDay string, endDay string) (FoodWaterL
 // WaterLogByDateRange returns the calories log of a given time range by date
 // date must be in the format yyyy-MM-dd
 func (m *Session) WaterLogByDateRange(startDay string, endDay string) (FoodWaterLogDateRange, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/foods/log/water/date/" + startDay + "/" + endDay + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/water/date/%s/%s.json", startDay, endDay))
 	if err != nil {
 		return FoodWaterLogDateRange{}, err
 	}
@@ -170,7 +171,7 @@ type WaterLog struct {
 // WaterLogByDay returns the water log by a given date
 // date must be in the format yyyy-MM-dd
 func (m *Session) WaterLogByDay(day string) (WaterLog, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/foods/log/water/date/" + day + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/water/date/%s.json", day))
 	if err != nil {
 		return WaterLog{}, err
 	}
@@ -267,7 +268,7 @@ func (m *Session) UpdateWater(id uint64, amount float64, unit string) (WaterLog,
 		return WaterLog{}, errors.New("unit must be ml, fl oz or cup")
 	}
 
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/foods/log/water/"+strconv.FormatUint(id, 10)+".json", map[string]string{
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/water/%d.json", id), map[string]string{
 		"amount": strconv.FormatFloat(amount, 'f', 1, 64),
 		"unit":   unit,
 	})
@@ -289,7 +290,7 @@ func (m *Session) RemoveWater(id uint64) error {
 		return errors.New("id must be defined")
 	}
 
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/foods/log/water/" + strconv.FormatUint(id, 10) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/water/%d.json", id))
 	if err != nil {
 		return err
 	}
@@ -357,7 +358,7 @@ func (m *Session) FoodSearch(value string) (FoodSearchResult, error) {
 
 // FoodByID returns a food by its id
 func (m *Session) FoodByID(id uint64) (FoodEntry, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/foods/" + strconv.FormatUint(id, 10) + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/foods/%d.json", id))
 	if err != nil {
 		return FoodEntry{}, err
 	}
@@ -491,7 +492,7 @@ func (m *Session) UpdateFood(id uint64, data NewFoodLog) (AddFoodLogResponse, er
 		dataToPost["calories"] = strconv.FormatUint(data.Calories, 10)
 	}
 
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/foods/log/"+strconv.FormatUint(id, 10)+".json", dataToPost)
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/%d.json", id), dataToPost)
 	if err != nil {
 		return AddFoodLogResponse{}, err
 	}
@@ -510,7 +511,7 @@ func (m *Session) RemoveFood(id uint64) error {
 		return errors.New("id must be defined")
 	}
 
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/foods/log/" + strconv.FormatUint(id, 10) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/%d.json", id))
 	if err != nil {
 		return err
 	}

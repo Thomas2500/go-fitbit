@@ -23,7 +23,7 @@ func (m *Session) ActivitiesGoal(period string) (ActivitiesGoal, error) {
 		period = "daily"
 	}
 
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/goals/" + period + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/goals/%s.json", period))
 	if err != nil {
 		return ActivitiesGoal{}, err
 	}
@@ -60,7 +60,7 @@ func (m *Session) SetActivitiesGoal(period string, goals ActivitiesGoal) (Activi
 		goalsData["distance"] = fmt.Sprintf("%f", goals.Goals.Distance)
 	}
 
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/activities/goals/"+period+".json", goalsData)
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/goals/%s.json", period), goalsData)
 	if err != nil {
 		return ActivitiesGoal{}, err
 	}

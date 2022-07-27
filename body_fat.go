@@ -3,7 +3,6 @@ package fitbit
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 )
 
 // BodyFat contains one or multiple records, similar to BodyFat but without weight
@@ -20,7 +19,7 @@ type BodyFat struct {
 // BodyFatLogByDay returns the fat log by a given date
 // date must be in the format yyyy-MM-dd
 func (m *Session) BodyFatLogByDay(day string) (BodyFat, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/body/log/fat/date/" + day + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/body/log/fat/date/%s.json", day))
 	if err != nil {
 		return BodyFat{}, err
 	}
@@ -36,7 +35,7 @@ func (m *Session) BodyFatLogByDay(day string) (BodyFat, error) {
 // BodyFatLogByDateRange returns the weight log of a given time range by date
 // date must be in the format yyyy-MM-dd
 func (m *Session) BodyFatLogByDateRange(startDay string, endDay string) (BodyFat, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/body/log/fat/date/" + startDay + "/" + endDay + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/body/log/fat/date/%s/%s.json", startDay, endDay))
 	if err != nil {
 		return BodyFat{}, err
 	}
@@ -70,7 +69,7 @@ func (m *Session) AddBodyFat(day string, fat float64) (BodyFat, error) {
 
 // RemoveBodyFat removes a existing record by it's log ID
 func (m *Session) RemoveBodyFat(logID int64) error {
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/body/log/fat/" + strconv.FormatInt(logID, 10) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/body/log/fat/%d.json", logID))
 	if err != nil {
 		return err
 	}

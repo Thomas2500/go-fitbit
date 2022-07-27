@@ -3,6 +3,7 @@ package fitbit
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // ActivitiesLog contains user activity logs, only one dataset is used and the other ones are empty
@@ -71,7 +72,7 @@ func (m *Session) ActivitiesLogByDay(day string, activity string, fetchRange str
 		fetchRange = "1d"
 	}
 
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/" + activity + "/date/" + day + "/" + fetchRange + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/%s/date/%s/%s.json", activity, day, fetchRange))
 	if err != nil {
 		return ActivitiesLog{}, err
 	}
@@ -96,7 +97,7 @@ func (m *Session) ActivitiesLogInterdayByDay(day string, activity string) (Activ
 		return ActivitiesInterdayLog{}, errors.New("unknown activity given")
 	}
 
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/" + activity + "/date/" + day + "/1d/1min.json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/%s/date/%s/1d/1min.json", activity, day))
 	if err != nil {
 		return ActivitiesInterdayLog{}, err
 	}

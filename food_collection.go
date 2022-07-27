@@ -2,7 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
-	"strconv"
+	"fmt"
 )
 
 // FoodFavorites returns favorite food
@@ -122,7 +122,7 @@ func (m *Session) FoodRecent() (FoodCollectionList, error) {
 
 // AddFoodFavorite adds food by id to favorites
 func (m *Session) AddFoodFavorite(id uint64) error {
-	_, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/foods/log/favorite/"+strconv.FormatUint(id, 10)+".json", map[string]string{})
+	_, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/favorite/%d.json", id), map[string]string{})
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func (m *Session) AddFoodFavorite(id uint64) error {
 
 // RemoveFoodFavorite removes food by id from facorites
 func (m *Session) RemoveFoodFavorite(id uint64) error {
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/foods/log/favorite/" + strconv.FormatUint(id, 10) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/foods/log/favorite/%d.json", id))
 	if err != nil {
 		return err
 	}

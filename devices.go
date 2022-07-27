@@ -2,6 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -26,7 +27,7 @@ func (m *Session) Devices(userID uint64) ([]Device, error) {
 	if userID > 0 {
 		requestID = strconv.FormatUint(userID, 10)
 	}
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/" + requestID + "/devices.json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/%s/devices.json", requestID))
 	if err != nil {
 		return []Device{}, err
 	}

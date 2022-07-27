@@ -3,6 +3,7 @@ package fitbit
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/url"
 	"strconv"
 	"time"
@@ -96,7 +97,7 @@ type SleepDay struct {
 // SleepByDay returns the sleep data for a given date
 // date must be in the format yyyy-MM-dd
 func (m *Session) SleepByDay(day string) (SleepDay, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1.2/user/-/sleep/date/" + day + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1.2/user/-/sleep/date/%s.json", day))
 	if err != nil {
 		return SleepDay{}, err
 	}
@@ -112,7 +113,7 @@ func (m *Session) SleepByDay(day string) (SleepDay, error) {
 // SleepByDayRange returns the sleep data for a given date range
 // date must be in the format yyyy-MM-dd
 func (m *Session) SleepByDayRange(startDay string, endDay string) (SleepDay, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1.2/user/-/sleep/date/" + startDay + "/" + endDay + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1.2/user/-/sleep/date/%s/%s.json", startDay, endDay))
 	if err != nil {
 		return SleepDay{}, err
 	}
@@ -268,7 +269,7 @@ func (m *Session) AddSleep(date string, startTime string, duration int64) (Sleep
 
 // RemoveSleep removes a sleep entry
 func (m *Session) RemoveSleep(sleepID uint64) error {
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/sleep/" + strconv.FormatUint(sleepID, 10) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/sleep/%d.json", sleepID))
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -67,7 +68,7 @@ type ActivitiesSummaryDay struct {
 // ActivitiesDaySummary returns the summary of activities and made exercises
 // date must be in the format yyyy-MM-dd
 func (m *Session) ActivitiesDaySummary(day string) (ActivitiesSummaryDay, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/date/" + day + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/date/%s.json", day))
 	if err != nil {
 		return ActivitiesSummaryDay{}, err
 	}

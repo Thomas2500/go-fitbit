@@ -3,12 +3,13 @@ package fitbit
 import (
 	"encoding/json"
 	"errors"
-	"strconv"
+	"fmt"
 )
 
 // Subscription contains response and request data of fitbit eventsx
 type Subscription struct {
 	CollectionType string `json:"collectionType"`
+	Date           string `json:"date,omitempty"`
 	OwnerID        string `json:"ownerId"`
 	OwnerType      string `json:"ownerType"`
 	SubscriberID   string `json:"subscriberId"`
@@ -17,13 +18,7 @@ type Subscription struct {
 
 // SubscriptionList contains a list of current active subscriptions
 type SubscriptionList struct {
-	APISubscriptions []struct {
-		CollectionType string `json:"collectionType"`
-		OwnerID        string `json:"ownerId"`
-		OwnerType      string `json:"ownerType"`
-		SubscriberID   string `json:"subscriberId"`
-		SubscriptionID string `json:"subscriptionId"`
-	} `json:"apiSubscriptions"`
+	APISubscriptions []Subscription `json:"apiSubscriptions"`
 }
 
 // AddSubscription adds a new subscription where fitbit sends a request on changes caused by the user
@@ -34,7 +29,7 @@ func (m *Session) AddSubscription(collectionPath string, uniqueID int) (bool, Su
 	if collectionPath != "" {
 		collectionPath += "/"
 	}
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/"+collectionPath+"apiSubscriptions/"+strconv.Itoa(uniqueID)+".json", nil)
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/%sapiSubscriptions/%d.json", collectionPath, uniqueID), nil)
 	if err != nil {
 		return false, Subscription{}, err
 	}
@@ -55,7 +50,7 @@ func (m *Session) RemoveSubscription(collectionPath string, uniqueID int) (bool,
 	if collectionPath != "" {
 		collectionPath += "/"
 	}
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/" + collectionPath + "apiSubscriptions/" + strconv.Itoa(uniqueID) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/%sapiSubscriptions/%d.json", collectionPath, uniqueID))
 	if err != nil {
 		return false, err
 	}
@@ -68,7 +63,7 @@ func (m *Session) GetSubscriptions(collectionPath string) (bool, SubscriptionLis
 	if collectionPath != "" {
 		collectionPath += "/"
 	}
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1/user/-/"+collectionPath+"apiSubscriptions.json", nil)
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/%sapiSubscriptions.json", collectionPath), nil)
 	if err != nil {
 		return false, SubscriptionList{}, err
 	}

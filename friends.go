@@ -2,6 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -165,7 +166,7 @@ func (m *Session) FriendsRespondToInvition(userID string, accept bool) ([]byte, 
 		"accept": strconv.FormatBool(accept),
 	}
 
-	contents, err := m.makePOSTRequest("https://api.fitbit.com/1.1/user/-/friends/invitations/"+userID, data)
+	contents, err := m.makePOSTRequest(fmt.Sprintf("https://api.fitbit.com/1.1/user/-/friends/invitations/%s", userID), data)
 	if err != nil {
 		return nil, err
 	}

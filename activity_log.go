@@ -3,6 +3,7 @@ package fitbit
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/url"
 	"strconv"
 	"time"
@@ -200,7 +201,7 @@ type NewActivityResponse struct {
 // RemoveActivity deletes an existing activity by activity log id
 // TODO: TESTME
 func (m *Session) RemoveActivity(id int) error {
-	_, err := m.makeDELETERequest("https://api.fitbit.com/1/user/-/activities/" + strconv.Itoa(id) + ".json")
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/%d.json", id))
 	if err != nil {
 		return err
 	}

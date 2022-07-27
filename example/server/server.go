@@ -32,13 +32,16 @@ func main() {
 		RedirectURL:  fmt.Sprintf("https://%s/callback", "fitbit.bella.pm"),
 		Scopes: []string{
 			fitbit.ScopeActivity,
-			fitbit.ScopeSettings,
-			fitbit.ScopeLocation,
-			fitbit.ScopeSocial,
+			fitbit.ScopeBreathingRate,
 			fitbit.ScopeHeartrate,
-			fitbit.ScopeProfile,
-			fitbit.ScopeSleep,
+			fitbit.ScopeLocation,
 			fitbit.ScopeNutrition,
+			fitbit.ScopeProfile,
+			fitbit.ScopeSettings,
+			fitbit.ScopeSleep,
+			fitbit.ScopeSocial,
+			fitbit.ScopeSpO2,
+			fitbit.ScopeTemperature,
 			fitbit.ScopeWeight,
 		},
 	})
@@ -66,40 +69,42 @@ func main() {
 	}
 	fca.SetToken(&token)
 
+	// Execute some functions async to test some API functionality - may fail if not authorized using token
+	go func() {
+		time.Sleep(time.Second * 5)
+		log.Println(fca.GetSubscriptions(""))
+		time.Sleep(time.Second * 10)
+		log.Println(fca.AddSubscription("", 1))
+		time.Sleep(time.Second * 10)
+		log.Println(fca.GetSubscriptions(""))
+		time.Sleep(time.Second * 15)
+		log.Println("Core")
+		log.Println(fca.TemperatureCoreByDay("today"))
+		log.Println("Skin")
+		log.Println(fca.TemperatureSkinByDay("today"))
+	}()
+
 	// Create a webserver to allow simple naviation and exploration of the fitbit API
 	http.HandleFunc("/", handleMain)
-	//http.HandleFunc("/style.css", handleStyleFile)
+	http.HandleFunc("/style.css", handleStyleFile)
 
 	// Login and callback page
-	//http.HandleFunc("/login", handleFitbitLogin)
 	http.HandleFunc("/callback", handleFitbitCallback)
 	http.HandleFunc("/subscriber", handleFitbitSubscriber)
 
-	// Information about this API backend
-	//http.HandleFunc("/quota", handleHTTPQuota)
-
 	// API pages with data
+	http.HandleFunc("/login", handleFitbitLogin)
 	http.HandleFunc("/profile", httpFitbitGetProfile)
-
-	http.HandleFunc("/badges", httpFitbitGetBadges)
 	http.HandleFunc("/devices", httpFitbitGetDevices)
-	http.HandleFunc("/food/goal", httpFitbitGetFoodGoal)
 	http.HandleFunc("/food/log", httpFitbitGetFoodLog)
-	http.HandleFunc("/water/goal", httpFitbitGetWaterGoal)
+	http.HandleFunc("/food/goal", httpFitbitGetFoodGoal)
 	http.HandleFunc("/water/log", httpFitbitGetWaterLog)
+	http.HandleFunc("/water/goal", httpFitbitGetWaterGoal)
 	http.HandleFunc("/heart/day", httpFitbitGetHeatDay)
 	http.HandleFunc("/heart/intraday", httpFitbitGetHeatIntraday)
 	http.HandleFunc("/body/weight", httpFitbitGetBodyWeight)
-	http.HandleFunc("/body/weightrange", BodyWeightLogByDateRange)
-	http.HandleFunc("/body/fat", httpFitbitGetBodyFat)
-	http.HandleFunc("/activities/types", httpFitbitGetActivitiesTypes)
-	http.HandleFunc("/activities/interday", httpFitbitGetActivitiesInterday)
-	http.HandleFunc("/activities/frequent", httpFitbitGetActivitiesFrequent)
-	http.HandleFunc("/activities/recent", httpFitbitGetActivitiesRecent)
-	http.HandleFunc("/activities/day", httpFitbitGetActivitiesDaySummary)
-	http.HandleFunc("/sleep/today", httpFitbitGetSleepToday)
 	http.HandleFunc("/sleep/log", httpFitbitGetSleepLog)
-	http.HandleFunc("/sleep/goal", httpFitbitGetSleepGoal)
+	http.HandleFunc("/activities/summary", httpFitbitGetActivitiesDaySummary)
 
 	// Start listener
 	//http.ListenAndServe("127.0.0.1:48558", nil)
@@ -139,20 +144,6 @@ func fitbitSaveToken(token *oauth2.Token) {
 		log.Println("error encoding token", err)
 	}
 	log.Println("FITBIT: token saved to file")
-}
-
-// Execute some functions async to test some API functionality - may fail if not authorized using token
-func init() {
-	go func() {
-		time.Sleep(time.Second * 5)
-		log.Println(fca.GetSubscriptions(""))
-		time.Sleep(time.Second * 10)
-		log.Println(fca.AddSubscription("", 1))
-		time.Sleep(time.Second * 30)
-		log.Println(fca.GetSubscriptions(""))
-		time.Sleep(time.Second * 45)
-		log.Println(fca.Introspect())
-	}()
 }
 
 // handleFitbitCallback handles the oAuth2 callback visited by the user after granting permissions

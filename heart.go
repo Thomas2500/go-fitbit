@@ -2,6 +2,7 @@ package fitbit
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // HeartDay contains a summary of heartrates for a given date range
@@ -55,7 +56,7 @@ func (m *Session) HeartLogByDay(day string) (HeartDay, error) {
 		day = "today"
 	}
 
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/heart/date/" + day + "/1d.json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/heart/date/%s/1d.json", day))
 	if err != nil {
 		return HeartDay{}, err
 	}
@@ -90,7 +91,7 @@ func (m *Session) HeartIntraday(day string, resolution string, timeFrom string, 
 		resolution = "1sec"
 	}
 
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/heart/date/" + day + "/1d/" + resolution + "/time/" + timeFrom + "/" + timeTo + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/heart/date/%s/1d/%s/time/%s/%s.json", day, resolution, timeFrom, timeTo))
 	if err != nil {
 		return HeartIntraday{}, err
 	}
@@ -106,7 +107,7 @@ func (m *Session) HeartIntraday(day string, resolution string, timeFrom string, 
 // HeartLogByDateRange returns the calories log of a given time range by date
 // date must be in the format yyyy-MM-dd
 func (m *Session) HeartLogByDateRange(startDay string, endDay string) (HeartDay, error) {
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/activities/heart/date/" + startDay + "/" + endDay + ".json")
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/heart/date/%s/%s.json", startDay, endDay))
 	if err != nil {
 		return HeartDay{}, err
 	}

@@ -3,22 +3,49 @@
 Fitbit API for Go
 
 The official docs do provide partially different data than provided by the API. This project uses the retuned data of the API as base instead of the official fields defined by the documentation. This fields do use `omitempty` to not break parsing.
+Partially some fields were added in the documentation but are still missing in the Swagger file provided by Fitbit.
 
-Please not that you need to register an app on https://dev.fitbit.com/apps/new to receive an API key.
-If you want to use the data only for yourself, you can use "Personal" as OAuth Application Type. This way the API allows access to intraday data like pulse data in second resolution. Otherwise, use "Server" as application type.
-You can view your existing apps at https://dev.fitbit.com/apps.
+Please note that you need to register an app on https://dev.fitbit.com/apps/new to receive an API key to use any functionality provided by this project.
+If you want to use the data only for yourself, you can use "Personal" as OAuth application type. This way the API allows access to intraday data like pulse data in second resolution. Otherwise, use "Server" as application type.
+You can view your existing apps including your credentials at https://dev.fitbit.com/apps.
 
+This project is provided as-is and should be tested before using in any productive environment.
 Did I forgot something to implement, found a bug, something changed or recommendations? Please feel free to create an issue or a pull request!
 
 ## Installation
 
+This project can be used as a dependency of your project.
 ```
 go get github.com/Thomas2500/go-fitbit
 ```
 
 ## Example
 
-You can find a working example how to use go-fitbit within the folder `example/server/` which shows data of all API endpoints and shows how to use subscriptions where fitbit informs you about user data changes.
+You can find a working example how to use go-fitbit within the folder [`example/server/`](https://github.com/Thomas2500/go-fitbit/tree/master/example/server) which shows data of most API endpoints, shows how to use subscriptions and how to handle token updates.
+
+Initialisizing a new API session can be done using the fitbit.Config struct. This will return a new API session.
+```go
+// Create a new fitbit session
+fca = fitbit.New(fitbit.Config{
+  ClientID:     clientID,
+  ClientSecret: clientSecret,
+  RedirectURL:  fmt.Sprintf("https://%s/callback", "localhost"),
+  Scopes: []string{
+    fitbit.ScopeActivity,
+    fitbit.ScopeBreathingRate,
+    fitbit.ScopeHeartrate,
+    fitbit.ScopeLocation,
+    fitbit.ScopeNutrition,
+    fitbit.ScopeProfile,
+    fitbit.ScopeSettings,
+    fitbit.ScopeSleep,
+    fitbit.ScopeSocial,
+    fitbit.ScopeSpO2,
+    fitbit.ScopeTemperature,
+    fitbit.ScopeWeight,
+  },
+})
+```
 
 ## Notes
 
@@ -26,22 +53,19 @@ As of https://dev.fitbit.com/build/reference/web-api/basics/#numerical-ids all I
 
 ## TODO
 
-Some functions arn't tested because I do not have the hardware for it (I'm only using a Fitbit Versa and MobileTrack of the iPhone app). If you have hardware which provides additional data (alarms or Fitbit Aria) please test the functions and let me know if every works or something needs to be changed.
+Some functions arn't tested because I do not have the hardware for it (I'm only using a Fitbit Versa 1 and MobileTrack of the iPhone app). If you have hardware which provides additional data (alarms, temperature, or Fitbit Aria) please test the functionality and let me know if everything works or something needs to be changed.
 
 Functioons explicitly not tested (eventually broken, please test!) or not finished yet:
 - activity favorite
 - activity TCX (activity with GPS datapoints, hat not the time yet to implement this)
 - alarms (no hardware)
 - meals (sounds very interesing, seems not to be implemented within the smartphone app and web version?)
-- friends (pnly partially tested)
+- friends (only partially tested)
 - foods
   - create custom food - https://dev.fitbit.com/build/reference/web-api/food-logging/#create-food
   - delete custom food - https://dev.fitbit.com/build/reference/web-api/food-logging/#delete-custom-food
-
-Implement newly addad APIs:
- - Temperature
- - Breathing Rate
- - SpO2
+- Temperature (no hardware)
+- Breathing Rate (no hardware)
 
 Further to do:
 - combine similar structs and highlight differences
@@ -49,7 +73,6 @@ Further to do:
 ## Findings
 - /1/foods/locales.json returns imageUpload true on en_US, but not with other languages like de_DE. No description how it can be used.
 - Food search does only return PUBLIC records and no custom stored records. I found no way to find my own records or use them.
-- SpO2 data isn't provided by the API
 
 ## What I use this API for
 
