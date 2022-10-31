@@ -133,7 +133,7 @@ func (m *Session) SleepLogList(params LogListParameters) (SleepLogList, error) {
 		parameterList.Add("beforeDate", params.BeforeDate)
 		parameterList.Add("sort", "desc")
 	} else if params.AfterDate != "" {
-		parameterList.Add("afterDate", params.BeforeDate)
+		parameterList.Add("afterDate", params.AfterDate)
 		parameterList.Add("sort", "asc")
 	} else {
 		return SleepLogList{}, errors.New("beforeDate or afterDate must be given")
