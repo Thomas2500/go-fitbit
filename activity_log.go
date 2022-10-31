@@ -12,6 +12,8 @@ import (
 // ActivityLog returns the activity log for the given configuration
 func (m *Session) ActivityLog(params LogListParameters) (ActivitiesLogList, error) {
 	parameterList := url.Values{}
+
+	//nolint:gocritic
 	if params.BeforeDate != "" {
 		parameterList.Add("beforeDate", params.BeforeDate)
 		parameterList.Add("sort", "desc")
@@ -118,6 +120,8 @@ type ActivitiesLogList struct {
 // TODO: TESTME
 func (m *Session) LogActivity(activity NewActivity) (NewActivityResponse, error) {
 	postData := make(map[string]string)
+
+	//nolint:gocritic
 	if activity.ActivityID != 0 {
 		postData["activityId"] = strconv.Itoa(activity.ActivityID)
 	} else if activity.ActivityName != "" {
@@ -170,6 +174,8 @@ func (m *Session) LogActivity(activity NewActivity) (NewActivityResponse, error)
 }
 
 // NewActivity contains the data for a new activity
+//
+//nolint:lll
 type NewActivity struct {
 	ActivityID     int     `json:"activityId,omitempty"`
 	ActivityName   string  `json:"activityName,omitempty"`

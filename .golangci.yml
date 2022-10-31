@@ -5,11 +5,14 @@ linters-settings:
   lll:
     line-length: 170
 
+run:
+  skip-dirs:
+    - example/server
+
 linters:
   enable:
     - bodyclose
     - containedctx
-    - deadcode
     - depguard
     - errcheck
     - exhaustive
@@ -20,7 +23,6 @@ linters:
     - gosec
     - gosimple
     - govet
-    - ifshort
     - ineffassign
     - lll
     - makezero
@@ -30,9 +32,7 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - structcheck
     - typecheck
     - unparam
     - unused
-    - varcheck
     - whitespace

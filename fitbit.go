@@ -2,7 +2,7 @@ package fitbit
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,12 +13,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// API REFERENCE AT: https://dev.fitbit.com/build/reference/web-api/heart-rate/
-// Application Info: https://dev.fitbit.com/apps/details/22D5RX
-
+// Define used Fitbit endpoints
 const (
-	fitbitAuthURL  = "https://www.fitbit.com/oauth2/authorize"
-	fitbitTokenURL = "https://api.fitbit.com/oauth2/token"
+	fitbitAuthURL  = "https://www.fitbit.com/oauth2/authorize" //nolint:gosec
+	fitbitTokenURL = "https://api.fitbit.com/oauth2/token"     //nolint:gosec
 )
 
 // Scope describes an oauth2 scope for Fitbit
@@ -210,7 +208,7 @@ func (m *Session) makeRequest(url string) ([]byte, error) {
 	m.parseRatelimit(&response.Header)
 
 	// Read all data from request
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +253,7 @@ func (m *Session) makePOSTRequest(targetURL string, param map[string]string) ([]
 	m.parseRatelimit(&response.Header)
 
 	// Read all data from request
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -293,7 +291,7 @@ func (m *Session) makeDELETERequest(url string) ([]byte, error) {
 	m.parseRatelimit(&response.Header)
 
 	// Read all data from request
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}

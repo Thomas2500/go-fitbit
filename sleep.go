@@ -129,6 +129,8 @@ func (m *Session) SleepByDayRange(startDay string, endDay string) (SleepDay, err
 // SleepLogList returns the sleep log list for based on given parameters
 func (m *Session) SleepLogList(params LogListParameters) (SleepLogList, error) {
 	parameterList := url.Values{}
+
+	//nolint:gocritic
 	if params.BeforeDate != "" {
 		parameterList.Add("beforeDate", params.BeforeDate)
 		parameterList.Add("sort", "desc")

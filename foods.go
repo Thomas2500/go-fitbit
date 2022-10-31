@@ -444,6 +444,7 @@ func (m *Session) AddFood(data NewFoodLog) (AddFoodLogResponse, error) {
 	dataToPost["amount"] = strconv.FormatFloat(data.Amount, 'f', 2, 64)
 	dataToPost["date"] = data.Date
 
+	//nolint:gocritic
 	if data.FoodID != 0 {
 		dataToPost["foodId"] = strconv.FormatUint(data.FoodID, 10)
 	} else if data.FoodName != "" {

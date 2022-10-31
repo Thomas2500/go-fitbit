@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
 )
 
 func handleMain(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,11 @@ func handleMain(w http.ResponseWriter, r *http.Request) {
 		Quota: `
 
 	rateLimit := fca.GetRatelimit()
-	htmlIndex += strconv.Itoa(rateLimit.RateLimitUsed) + "/" + strconv.Itoa(rateLimit.RateLimitAvailable) + " requests until next reset<br>Next reset: <code>" + rateLimit.RateLimitReset.String() + "</code>"
+	htmlIndex += fmt.Sprintf("%d/%d requests until next reset<br>Next reset: <code>%s</code>",
+		rateLimit.RateLimitUsed,
+		rateLimit.RateLimitAvailable,
+		rateLimit.RateLimitReset.String(),
+	)
 
 	htmlIndex += `<br><br><hr>
 		<h2>API reference:</h2>
