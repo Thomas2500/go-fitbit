@@ -164,6 +164,7 @@ func (m *Session) SleepLogList(params LogListParameters) (SleepLogList, error) {
 // SleepLogList defines the structure of SleepLogList based on an response
 type SleepLogList struct {
 	Pagination struct {
+		AfterDate  string `json:"afterDate"`
 		BeforeDate string `json:"beforeDate"`
 		Limit      int    `json:"limit"`
 		Next       string `json:"next"`
