@@ -263,6 +263,8 @@ func (m *Session) makePOSTRequest(targetURL string, param map[string]string) ([]
 
 // makeDELETERequest creates a new request to a given url using given
 // OAuth token of an user
+//
+//nolint:unparam
 func (m *Session) makeDELETERequest(url string) ([]byte, error) {
 	// if httpClient is nil build a new one
 	if m.httpClient == nil {
