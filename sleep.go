@@ -148,7 +148,7 @@ func (m *Session) SleepLogList(params LogListParameters) (SleepLogList, error) {
 
 	parameterList.Add("offset", strconv.Itoa(params.Offset))
 
-	contents, err := m.makeRequest("https://api.fitbit.com/1/user/-/sleep/list.json?" + parameterList.Encode())
+	contents, err := m.makeRequest("https://api.fitbit.com/1.2/user/-/sleep/list.json?" + parameterList.Encode())
 	if err != nil {
 		return SleepLogList{}, err
 	}
@@ -270,7 +270,7 @@ func (m *Session) AddSleep(date string, startTime string, duration int64) (Sleep
 
 // RemoveSleep removes a sleep entry
 func (m *Session) RemoveSleep(sleepID uint64) error {
-	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/sleep/%d.json", sleepID))
+	_, err := m.makeDELETERequest(fmt.Sprintf("https://api.fitbit.com/1.2/user/-/sleep/%d.json", sleepID))
 	if err != nil {
 		return err
 	}
