@@ -48,6 +48,43 @@ type ActivitiesHeartIntraday struct {
 	DatasetType     string `json:"datasetType"`
 }
 
+// HeartRateVariabilitySummary contains a summary of heartrate variability (HRV) values for a given date range
+type HeartRateVariabilitySummary struct {
+	Hrv []HRVDay `json:"hrv"`
+}
+
+type HRVDay struct {
+	Value    HRVValue `json:"value"`
+	DateTime string   `json:"dateTime"`
+}
+
+type HRVValue struct {
+	DailyRmssd float64 `json:"dailyRmssd"`
+	DeepRmssd  float64 `json:"deepRmssd"`
+}
+
+// HeartRateVariabilityIntraday with slightly different structure to HeartRateVariabilitySummary
+type HeartRateVariabilityIntraday struct {
+	Hrv []HRVIntraday `json:"hrv"`
+}
+
+type HRVIntraday struct {
+	Minutes  []HRVMinutes `json:"minutes"`
+	DateTime string       `json:"dateTime"`
+}
+
+type HRVMinutes struct {
+	Minute string           `json:"minutes"`
+	Value  HRVIntradayValue `json:"value"`
+}
+
+type HRVIntradayValue struct {
+	Rmssd    float64 `json:"rmssd"`
+	Coverage float64 `json:"coverage"`
+	Hf       float64 `json:"hf"`
+	Lf       float64 `json:"lf"`
+}
+
 // HeartLogByDay returns the heart log by a given date
 // date must be in the format yyyy-MM-dd
 func (m *Session) HeartLogByDay(day string) (HeartDay, error) {
@@ -118,4 +155,82 @@ func (m *Session) HeartLogByDateRange(startDay string, endDay string) (HeartDay,
 	}
 
 	return heart, nil
+}
+
+// HRVSummaryByDateRange the Heart Rate Variability (HRV) data for a date range.
+// HRV data applies specifically to a user’s “main sleep,” which is the longest single period of time asleep on a given date.
+// date must be in the format yyyy-MM-dd
+func (m *Session) HRVSummaryByDateRange(startDay string, endDay string) (HeartRateVariabilitySummary, error) {
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/hrv/date/%s/%s.json", startDay, endDay))
+	if err != nil {
+		return HeartRateVariabilitySummary{}, err
+	}
+
+	hrv := HeartRateVariabilitySummary{}
+	if err := json.Unmarshal(contents, &hrv); err != nil {
+		return HeartRateVariabilitySummary{}, err
+	}
+
+	return hrv, nil
+}
+
+// HRVSummaryByDate the Heart Rate Variability (HRV) data for a date.
+// HRV data applies specifically to a user’s “main sleep,” which is the longest single period of time asleep on a given date.
+// date must be in the format yyyy-MM-dd
+func (m *Session) HRVSummaryByDate(day string) (HeartRateVariabilitySummary, error) {
+	// If not day is given assume today
+	if day == "" {
+		day = "today"
+	}
+
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/hrv/date/%s.json", day))
+	if err != nil {
+		return HeartRateVariabilitySummary{}, err
+	}
+
+	hrv := HeartRateVariabilitySummary{}
+	if err := json.Unmarshal(contents, &hrv); err != nil {
+		return HeartRateVariabilitySummary{}, err
+	}
+
+	return hrv, nil
+}
+
+// HRVSummaryByDateRange the Heart Rate Variability (HRV) data for a date range.
+// HRV data applies specifically to a user’s “main sleep,” which is the longest single period of time asleep on a given date.
+// date must be in the format yyyy-MM-dd
+func (m *Session) HRVIntradayByDateRange(startDay string, endDay string) (HeartRateVariabilityIntraday, error) {
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/hrv/date/%s/%s/all.json", startDay, endDay))
+	if err != nil {
+		return HeartRateVariabilityIntraday{}, err
+	}
+
+	hrv := HeartRateVariabilityIntraday{}
+	if err := json.Unmarshal(contents, &hrv); err != nil {
+		return HeartRateVariabilityIntraday{}, err
+	}
+
+	return hrv, nil
+}
+
+// HRVSummaryByDate the Heart Rate Variability (HRV) data for a date.
+// HRV data applies specifically to a user’s “main sleep,” which is the longest single period of time asleep on a given date.
+// date must be in the format yyyy-MM-dd
+func (m *Session) HRVIntradayByDate(day string) (HeartRateVariabilityIntraday, error) {
+	// If not day is given assume today
+	if day == "" {
+		day = "today"
+	}
+
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/hrv/date/%s/all.json", day))
+	if err != nil {
+		return HeartRateVariabilityIntraday{}, err
+	}
+
+	hrv := HeartRateVariabilityIntraday{}
+	if err := json.Unmarshal(contents, &hrv); err != nil {
+		return HeartRateVariabilityIntraday{}, err
+	}
+
+	return hrv, nil
 }
