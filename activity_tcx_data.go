@@ -54,7 +54,7 @@ type GarminTrainingCenterDatabasev2 struct {
 				Type      string `xml:"type,attr"`
 				Xsi       string `xml:"xsi,attr"`
 				Name      string `xml:"Name"`
-				UnitId    string `xml:"UnitId"`
+				UnitID    string `xml:"UnitId"`
 				ProductID string `xml:"ProductID"`
 			} `xml:"Creator"`
 		} `xml:"Activity"`
