@@ -197,7 +197,7 @@ type NewActivityResponse struct {
 		Distance         float64 `json:"distance"`
 		Duration         int     `json:"duration"`
 		IsFavorite       bool    `json:"isFavorite"`
-		LogID            int     `json:"logId"`
+		LogID            int64   `json:"logId"`
 		Name             string  `json:"name"`
 		StartTime        string  `json:"startTime"`
 		Steps            int     `json:"steps"`
