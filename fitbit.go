@@ -25,6 +25,7 @@ type Scope = string
 // Different types of useable scopes
 const (
 	ScopeActivity      Scope = "activity"
+	ScopeCardioFitness Scope = "cardio_fitness"
 	ScopeBreathingRate Scope = "respiratory_rate"
 	ScopeHeartrate     Scope = "heartrate"
 	ScopeLocation      Scope = "location"
