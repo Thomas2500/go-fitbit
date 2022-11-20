@@ -58,22 +58,26 @@ type Session struct {
 	// httpClient is the authenticated http client used for this oAuth session
 	httpClient *http.Client
 
+	// locale is the locale used for this session
+	locale string
+
 	mutex sync.RWMutex
 }
 
 // Config describes the configuration of a fitbit API configuration
 type Config struct {
-	ClientID     string
-	ClientSecret string
-	RedirectURL  string
-	Scopes       []Scope
+	ClientID     string  // ClientID is the client id (OAuth 2.0 Client ID) of the application (required)
+	ClientSecret string  // ClientSecret is the client secret (Client Secret) of the application (required)
+	RedirectURL  string  // RedirectURL is the redirect url of the application (required)
+	Scopes       []Scope // Scopes is a list of scopes to request
+	Locale       string  // en_AU, fr_FR, de_DE, ja_JP, en_NZ, es_ES, en_GB, en_US (default: de_DE)
 }
 
 // Ratelimit includes the rate limit information provided on every request
 type Ratelimit struct {
-	RateLimitAvailable int
-	RateLimitUsed      int
-	RateLimitReset     time.Time
+	RateLimitAvailable int       // RateLimitAvailable is the number of requests available for the current rate limit window
+	RateLimitUsed      int       // RateLimitUsed is the number of requests used for the current rate limit window
+	RateLimitReset     time.Time // RateLimitReset is the time when the rate limit window resets
 }
 
 // New creates a new fitbit oauth session
@@ -89,10 +93,20 @@ func New(config Config) *Session {
 		},
 	}
 
+	// determine locale, if not used set to de_DE (this was the previous default)
+	// list of locales: https://dev.fitbit.com/build/reference/web-api/developer-guide/application-design/#Localization
+	locale := config.Locale
+	switch locale {
+	case "en_AU", "fr_FR", "de_DE", "ja_JP", "en_NZ", "es_ES", "en_GB", "en_US":
+	default:
+		locale = "de_DE"
+	}
+
 	// return session
 	return &Session{
 		config:      config,
 		oAuthConfig: oAuthConfig,
+		locale:      locale,
 	}
 }
 
@@ -195,8 +209,8 @@ func (m *Session) makeRequest(url string) ([]byte, error) {
 
 	// Set custom header
 	req.Header.Set("User-Agent", "go-fitbit")
-	req.Header.Set("Accept-Language", "de_DE")
-	req.Header.Set("Accept-Locale", "de_DE")
+	req.Header.Set("Accept-Language", m.locale)
+	req.Header.Set("Accept-Locale", m.locale)
 
 	// Fire request
 	response, err := m.httpClient.Do(req)
@@ -239,8 +253,8 @@ func (m *Session) makePOSTRequest(targetURL string, param map[string]string) ([]
 
 	// Set custom header
 	req.Header.Set("User-Agent", "go-fitbit")
-	req.Header.Set("Accept-Language", "de_DE")
-	req.Header.Set("Accept-Locale", "de_DE")
+	req.Header.Set("Accept-Language", m.locale)
+	req.Header.Set("Accept-Locale", m.locale)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	// Fire request
@@ -280,8 +294,8 @@ func (m *Session) makeDELETERequest(url string) ([]byte, error) {
 
 	// Set custom header
 	req.Header.Set("User-Agent", "go-fitbit")
-	req.Header.Set("Accept-Language", "de_DE")
-	req.Header.Set("Accept-Locale", "de_DE")
+	req.Header.Set("Accept-Language", m.locale)
+	req.Header.Set("Accept-Locale", m.locale)
 
 	// Fire request
 	response, err := m.httpClient.Do(req)
