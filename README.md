@@ -57,7 +57,6 @@ Some functions arn't tested because I do not have the hardware for it (I'm only 
 
 Functioons explicitly not tested (eventually broken, please test!) or not finished yet:
 - activity favorite
-- activity TCX (activity with GPS datapoints, hat not the time yet to implement this)
 - alarms (no hardware)
 - meals (sounds very interesing, seems not to be implemented within the smartphone app and web version?)
 - friends (only partially tested)
@@ -80,4 +79,4 @@ I do save the fetched data into MariaDB & InfluxDB databases for further process
 My plan for the future is to further process the data and combine it with other sources of data like weather, movie seen, music listened to, public travel vs driving with car, ...
 The possibilities are endless and I do have currently enough free storage to store everything :-)
 
-Big thanks to Fitbit for providing such great devices and API access to the generated data. Unfortunately, this is not a matter of course in the fitness and health sector, although it should be.
+**Big thanks to Fitbit for providing such great devices and API access to the generated data!** Unfortunately, this is not a matter of course in the fitness and health sector, although it should be.
