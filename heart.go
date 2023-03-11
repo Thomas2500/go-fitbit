@@ -141,10 +141,32 @@ func (m *Session) HeartIntraday(day string, resolution string, timeFrom string, 
 	return heartintra, nil
 }
 
-// HeartLogByDateRange returns the calories log of a given time range by date
+// HeartLogByDateRange returns the heart log of a given time range by date in default resolution
 // date must be in the format yyyy-MM-dd
 func (m *Session) HeartLogByDateRange(startDay string, endDay string) (HeartDay, error) {
 	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/heart/date/%s/%s.json", startDay, endDay))
+	if err != nil {
+		return HeartDay{}, err
+	}
+
+	heart := HeartDay{}
+	if err := json.Unmarshal(contents, &heart); err != nil {
+		return HeartDay{}, err
+	}
+
+	return heart, nil
+}
+
+// HeartLogByDateRangeIntraday returns the heart log by a given date range in the given resolution
+// date must be in the format yyyy-MM-dd
+// resolution can be 1min or 1sec, 1sec is default
+func (m *Session) HeartLogByDateRangeIntraday(startDay string, endDay string, resolution string) (HeartDay, error) {
+	// default to 1sec if resolution dos not match to 1min
+	if resolution != "1min" {
+		resolution = "1sec"
+	}
+
+	contents, err := m.makeRequest(fmt.Sprintf("https://api.fitbit.com/1/user/-/activities/heart/date/%s/%s/%s.json", startDay, endDay, resolution))
 	if err != nil {
 		return HeartDay{}, err
 	}
