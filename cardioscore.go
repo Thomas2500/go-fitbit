@@ -10,7 +10,7 @@ type CardioFitnessScoreLog struct {
 	CardioScore []struct {
 		DateTime string `json:"dateTime"`
 		Value    struct {
-			Vo2Max string `json:"vo2Max"`
+			Vo2Max string `json:"vo2Max"` // VO2 Max in mL/kg/min
 		} `json:"value"`
 	} `json:"cardioScore"`
 }
