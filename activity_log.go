@@ -57,8 +57,17 @@ type LogListParameters struct {
 // ActivitiesLogList contains the activity log list
 type ActivitiesLogList struct {
 	Activities []struct {
-		ActiveDuration int `json:"activeDuration"`
-		ActivityLevel  []struct {
+		ActiveDuration    int `json:"activeDuration"`
+		ActiveZoneMinutes struct {
+			MinutesInHeartRateZones struct {
+				MinuteMultiplier int    `json:"minuteMultiplier"`
+				Minutes          int    `json:"minutes"`
+				Order            int    `json:"order"`
+				Type             string `json:"type"`
+				ZoneName         string `json:"zoneName"`
+			} `json:"minutesInHeartRateZones"`
+		} `json:"activeZoneMinutes"`
+		ActivityLevel []struct {
 			Minutes int    `json:"minutes"`
 			Name    string `json:"name"`
 		} `json:"activityLevel"`
@@ -92,14 +101,16 @@ type ActivitiesLogList struct {
 		} `json:"source"`
 		Speed            float64   `json:"speed"`
 		StartTime        time.Time `json:"startTime"`
+		SwimLengths      int       `json:"swimLengths,omitempty"`
 		AverageHeartRate int       `json:"averageHeartRate,omitempty"`
 		DetailsLink      string    `json:"detailsLink,omitempty"`
 		HeartRateLink    string    `json:"heartRateLink,omitempty"`
 		HeartRateZones   []struct {
-			Max     int    `json:"max"`
-			Min     int    `json:"min"`
-			Minutes int    `json:"minutes"`
-			Name    string `json:"name"`
+			CaloriesOut float64 `json:"caloriesOut"`
+			Max         int     `json:"max"`
+			Min         int     `json:"min"`
+			Minutes     int     `json:"minutes"`
+			Name        string  `json:"name"`
 		} `json:"heartRateZones,omitempty"`
 		Pace    float64 `json:"pace,omitempty"`
 		Steps   int     `json:"steps,omitempty"`
