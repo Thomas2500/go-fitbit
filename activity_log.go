@@ -59,7 +59,7 @@ type ActivitiesLogList struct {
 	Activities []struct {
 		ActiveDuration    int `json:"activeDuration"`
 		ActiveZoneMinutes struct {
-			MinutesInHeartRateZones struct {
+			MinutesInHeartRateZones []struct {
 				MinuteMultiplier int    `json:"minuteMultiplier"`
 				Minutes          int    `json:"minutes"`
 				Order            int    `json:"order"`
