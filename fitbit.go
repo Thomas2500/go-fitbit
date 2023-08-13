@@ -27,6 +27,7 @@ const (
 	ScopeActivity      Scope = "activity"
 	ScopeCardioFitness Scope = "cardio_fitness"
 	ScopeBreathingRate Scope = "respiratory_rate"
+	ScopeECG           Scope = "electrocardiogram"
 	ScopeHeartrate     Scope = "heartrate"
 	ScopeLocation      Scope = "location"
 	ScopeNutrition     Scope = "nutrition"
