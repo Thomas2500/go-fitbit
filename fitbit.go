@@ -87,6 +87,7 @@ func New(config Config) *Session {
 	oAuthConfig := &oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
+		RedirectURL:  config.RedirectURL,
 		Scopes:       config.Scopes,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  fitbitAuthURL,
