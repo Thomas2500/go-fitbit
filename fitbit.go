@@ -330,6 +330,8 @@ func (m *Session) parseRatelimit(header *http.Header) {
 	rateLimitData = header.Get("fitbit-rate-limit-limit")
 	if rateLimitData != "" {
 		m.ratelimit.RateLimitAvailable, _ = strconv.Atoi(rateLimitData)
+		// RateLimitUsed contains remaining requests, naming is wrong so correct it to how much of limit was used
+		m.ratelimit.RateLimitUsed = m.ratelimit.RateLimitAvailable - m.ratelimit.RateLimitUsed
 	}
 
 	// rate limit reset returns when the rate limit will be reset
