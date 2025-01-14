@@ -2,6 +2,9 @@ package fitbit
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -195,6 +198,14 @@ func (m *Session) GetRatelimit() Ratelimit {
 	return m.ratelimit
 }
 
+type contentError struct {
+	Error struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+		Status  string `json:"status"`
+	} `json:"error"`
+}
+
 // makeRequest creates a new request to a given url using given
 // OAuth token of an user
 func (m *Session) makeRequest(url string) ([]byte, error) {
@@ -228,6 +239,13 @@ func (m *Session) makeRequest(url string) ([]byte, error) {
 	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check for error in content
+	// This will catch errors such as request quota exceeded
+	var cError contentError
+	if err = json.Unmarshal(contents, &cError); err == nil && cError.Error.Code != 0 {
+		return contents, errors.New(fmt.Sprintf("Error: %d, %s, %s", cError.Error.Code, cError.Error.Message, cError.Error.Status))
 	}
 
 	return contents, nil
