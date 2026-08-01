@@ -2,6 +2,13 @@
 
 Fitbit API for Go
 
+> [!IMPORTANT]
+> **Archived on August 1, 2026**
+>
+> This project targets the legacy Fitbit Web API and is no longer maintained. It was archived because Google will turn down the legacy Fitbit Web API in September 2026. This library will not be migrated to the replacement Google Health API.
+>
+> For the official shutdown notice and available migration paths, see the [Google Health API overview](https://developers.google.com/health/about), the [Fitbit Web API migration guide](https://developers.google.com/health/migration), and the [Google Health API parity tool](https://developers.google.com/health/migration/parity-tool).
+
 The official docs do provide partially different data than provided by the API. This project uses the retuned data of the API as base instead of the official fields defined by the documentation. This fields do use `omitempty` to not break parsing.
 Partially some fields were added in the documentation but are still missing in the Swagger file provided by Fitbit.
 
@@ -10,7 +17,6 @@ If you want to use the data only for yourself, you can use "Personal" as OAuth a
 You can view your existing apps including your credentials at https://dev.fitbit.com/apps.
 
 This project is provided as-is and should be tested before using in any productive environment.
-Did I forgot something to implement, found a bug, something changed or recommendations? Please feel free to create an issue or a pull request!
 
 ## Installation
 
